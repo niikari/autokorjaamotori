@@ -1,0 +1,6 @@
+export const LOGIN = "LOGIN"
+export const LOGOUT = "LOGOUT"
+export const REGISTER = "REGISTER"
+export const WELCOME = "WELCOME"
+export const UPDATE = "UPDATE"
+export const UPDATE_ADD_PLACE = "UPDATE_ADD_PLACE"
