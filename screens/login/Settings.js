@@ -110,61 +110,7 @@ export default function Settings({ navigation }) {
                     </Text>
                     <Icon name="settings" color="white" size={50} />
                 </View>
-                <View style={editSelf ? styles.editable : styles.notEditable}>
-                    <View>
-                        <Input
-                            placeholder={state.user.username}
-                            disabled={!editSelf}
-                            rightIcon={
-                                <Icon name="check-circle" color={userNameEdited.iconColor} onPress={changeUsername} />
-                            }
-                            errorMessage={editSelf ? userNameEdited.msg : ""}
-                            onChangeText={txt => handleUsernameEdited(txt)}
-                            value={userNameEdited.username}
-                        />
-                        <Input
-                            placeholder={state.user.phoneNumber ? state.user.phoneNumber : "Lisää puhelinnumerosi"}
-                            disabled={!editSelf}
-                            rightIcon={
-                                <Icon name="check-circle" color={phoneNumberEdited.iconColor} />
-                            }
-                            errorMessage={editSelf ? phoneNumberEdited.msg : ""}
-                            value={phoneNumberEdited.phoneNumber}
-                            onChangeText={txt => handlePhoneNumberEdited(txt)}
-                            keyboardType="numeric"
-                        />
-                        <Pressable style={styles.pressable} onPress={() => setEditSelf(current => !current)}>
-                            <Icon name="edit" />
-                            <Text>Muokkaa tietoja</Text>
-                        </Pressable>
-                    </View>
-                    {
-                    state.user.places ? (
-                        <View>
-                            <Text>Korjaamoita</Text>
-                        </View>
-                    ):
-                        <View style={{
-                            margin: 10,
-                            alignItems: "center"
-                        }}>
-                            <Text style={{ fontFamily: 'Dosis', fontSize: 20, marginBottom: 30 }}>Ei liitettyjä toimipaikkoja / yritystä</Text>
-                            <Button 
-                                title="Lisää"
-                                type="outline"
-                                titleStyle={{ fontFamily: 'Dosis', color: "black", fontWeight: "bold" }}
-                                buttonStyle={{ borderColor: "black" }}
-                                iconPosition="right"
-                                icon={
-                                    <Icon name="add" />
-                                }
-                                onPress={() => navigation.navigate("addplace")}
-                            />
-                        </View>
-                    }
-                    
-                    
-                </View>
+                
                 
                 
             </ImageBackground>

@@ -89,8 +89,11 @@ export default function ProfileNavigatorContent(props) {
                 type="clear"
                 iconPosition="left"
                 icon={
-                    <Icon name="logout" style={{ marginRight: 20 }} />
+                    <Icon name="logout" style={{ marginRight: 10 }} />
                 } 
+                buttonStyle={{
+                    marginRight: 'auto'
+                }}
                 titleStyle={{
                     fontFamily: 'Dosis',
                     color: "black",

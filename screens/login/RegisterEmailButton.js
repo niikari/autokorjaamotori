@@ -14,7 +14,12 @@ export default function RegisterEmailButton({ email, password, passwordAgain, ha
         if (password === passwordAgain && password.length > 5) {
             createUserWithEmailAndPassword(auth, email.replace(" ", ""), password)
             .then(user => {
-                register(user)
+                register({
+                    uid: user.user.uid,
+                    email: user.user.email,
+                    photoURL: user.user.photoURL
+                })
+                // console.log(user.user.uid)
             })
             .catch(err => {
                 if (err.code === "auth/email-already-in-use") {

@@ -3,7 +3,8 @@ import { Text, ImageBackground, Dimensions, View } from "react-native";
 import WelcomeImage from "./assets/background.png";
 import userContext from "./context/userContext";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "./firebase";
+import { app, db } from "./firebase";
+import { onValue, ref } from "firebase/database";
 
 const auth = getAuth(app)
 const screen = Dimensions.get("screen")
@@ -13,14 +14,14 @@ export default function WelcomePage() {
     const { state, login } = useContext(userContext)
 
     useEffect(() => {
-        auth.onAuthStateChanged((item) => {
-            if (item) {
-                const user = {
-                    user: {
-                        uid: item.uid
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                onValue(
+                    ref(db, `users/${user.uid}`), (snapshot) => {
+                        const data = snapshot.val()
+                        login(data)
                     }
-                }
-                login(user)
+                )                
             }
         })
     }, [])
@@ -72,7 +73,7 @@ export default function WelcomePage() {
                         marginTop: 40,
                         marginBottom: 70
                     }}>
-                        Tervetuloa takaisin {state.user.username}
+                        Tervetuloa takaisin {state.user.username ? state.user.username : state.user.email}
                     </Text>
                 ):
                 (
