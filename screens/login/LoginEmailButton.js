@@ -1,8 +1,9 @@
 import { Button } from "@rneui/themed";
 import { useContext } from "react";
 import userContext from "../../context/userContext";
-import { app } from "../../firebase";
+import { app, db } from "../../firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { onValue, ref } from "firebase/database";
 
 const auth = getAuth(app)
 
@@ -14,7 +15,7 @@ export default function LoginEmailButton({ email, password, handleMsg }) {
         signInWithEmailAndPassword(auth, email.replace(" ", ""), password)
         .then(user => {
             if (user) {
-                login(user)
+                login(user.user)
             } else {
                 handleMsg({
                     show: true,

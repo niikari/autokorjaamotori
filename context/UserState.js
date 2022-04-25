@@ -3,7 +3,7 @@ import { useReducer } from "react";
 import UserContext from "./userContext";
 import userReducer from "./userReducer";
 import { db } from "../firebase";
-import { ref, set } from "firebase/database";
+import { ref, set, onValue } from "firebase/database";
 
 export default function UserState(props) {
 
@@ -21,22 +21,14 @@ export default function UserState(props) {
     }
 
     const register = (user) => {
-        console.log("Objekti täällä: " + user)
         set(
             ref(db, `users/${user.uid}`), {
                 email: user.email,
                 uid: user.uid
             }
         )
-        .then(() => {
-            dispatch({
-                type: REGISTER,
-                payload: {
-                    uid: user.uid,
-                    email: user.email
-                }  
-            })
-        })
+        // MUUTETAAN VIELÄ NIIN ETTÄ KUUNTELEE MUUTOKSIA TIETOKANNASSA
+        .finally(() => login(user))
         .catch(err => console.log(err))
     }
 
@@ -47,10 +39,16 @@ export default function UserState(props) {
     }
 
     const login = (user) => {
-        dispatch({
-            type: LOGIN,
-            payload: user
-        })
+        onValue(
+            ref(db, `users/${user.uid}`), (snapshot) => {
+                const data = snapshot.val()
+                dispatch({
+                    type: LOGIN,
+                    payload: data
+                })
+            }
+        )
+        
     }
    
 

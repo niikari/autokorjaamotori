@@ -7,24 +7,25 @@ import { app, db } from "./firebase";
 import { onValue, ref } from "firebase/database";
 
 const auth = getAuth(app)
-const screen = Dimensions.get("screen")
 
 export default function WelcomePage() {
 
     const { state, login } = useContext(userContext)
 
     useEffect(() => {
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(user => {
             if (user) {
-                onValue(
-                    ref(db, `users/${user.uid}`), (snapshot) => {
-                        const data = snapshot.val()
-                        login(data)
-                    }
-                )                
+                login(user)
+                // const uid = user.uid
+                // onValue(
+                //     ref(db, `users/${uid}`), (snapshot) => {
+                //         const data  = snapshot.val()
+                //         login(data)
+                //     }
+                // )
             }
         })
-    }, [])
+    },[])
 
     return (
         <ImageBackground 

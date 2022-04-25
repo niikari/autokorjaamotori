@@ -1,4 +1,4 @@
-import { Button, Icon } from "@rneui/themed";
+import { Avatar, Button, Icon } from "@rneui/themed";
 import { View, ImageBackground, Text, Image } from "react-native";
 import { app } from "../../firebase";
 import { getAuth, signOut } from "firebase/auth";
@@ -40,7 +40,11 @@ export default function Profile({ navigation }) {
                     >
                         PROFIILI
                     </Text>
-                    <Icon name="person" color="white" size={50} />
+                    <Avatar 
+                        source={state.user.photoUrl ? { uri: state.user.photoUrl } : AvatarImage}
+                        rounded
+                        size={50}
+                    />
                 </View>
 
                 <View
@@ -48,27 +52,7 @@ export default function Profile({ navigation }) {
                         alignItems: "center"
                     }}
                 >
-                    <ImageBackground 
-                        source={AvatarImage}
-                        resizeMode="cover"
-                        style={{
-                            height: 200,
-                            width: 200,
-                            opacity: 0.9,
-                            margin: 30
-                        }}
-                    />
-                    <Text
-                        style={{
-                            fontFamily: 'Dosis',
-                            textAlign: "center",
-                            color: "black",
-                            fontSize: 20,
-                            marginTop: -20
-                        }}
-                    >
-                        {state.user.username}
-                    </Text>
+                    
                     
                 </View>
                 

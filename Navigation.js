@@ -7,7 +7,7 @@ import WelcomePage from "./WelcomePage";
 import { useEffect } from "react";
 import { Icon } from "@rneui/themed";
 import CreateNavigator from "./screens/create/CreateNavigator";
-import { useState } from "react";
+import AdvertsNavigator from "./screens/adverts/AdvertsNavigator";
 
 const Tab = createBottomTabNavigator()
 
@@ -18,7 +18,7 @@ export default function Navigation() {
     useEffect(() => {
         setTimeout(() => {
             setWelcomeSeen()
-        }, 7000);
+        }, 2000);
     }, [])
 
     while (state.welcome) {
@@ -35,8 +35,8 @@ export default function Navigation() {
             iconName = state.user ? "person" : "login"
           } else if (route.name === 'createnavigator') {
             iconName = 'assignment'
-          } else if (route.name === 'viestit') {
-            iconName = 'sms'
+          } else if (route.name === 'alladvertsnavigator') {
+            iconName = 'shopping-cart'
           } else if (route.name === 'tili') {
             iconName = 'person'
           }
@@ -49,9 +49,10 @@ export default function Navigation() {
 
     return (
         <NavigationContainer>
-            <Tab.Navigator screenOptions={screenOptions}>
-                <Tab.Screen name="loginavigator" component={LoginNavigator} options={{ title: state.user ? "Minä" : "Kirjautuminen", headerShown: false, tabBarHideOnKeyboard: true }} />
+            <Tab.Navigator screenOptions={screenOptions}>                
+                <Tab.Screen name="alladvertsnavigator" component={AdvertsNavigator} options={{ title: "Ilmoitukset", headerShown: false, tabBarHideOnKeyboard: true }} />
                 <Tab.Screen name="createnavigator" component={CreateNavigator} options={{ title: "Luo", headerShown: false, tabBarHideOnKeyboard: true }} />
+                <Tab.Screen name="loginavigator" component={LoginNavigator} options={{ title: state.user ? "Minä" : "Kirjautuminen", headerShown: false, tabBarHideOnKeyboard: true }} />                
             </Tab.Navigator>
         </NavigationContainer>
     )

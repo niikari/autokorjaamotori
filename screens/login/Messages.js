@@ -1,19 +1,28 @@
-import { Icon } from "@rneui/base";
-import { Button, Input } from "@rneui/themed";
+import { Icon } from "@rneui/themed";
+import { onValue, ref } from "firebase/database";
 import { useContext } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
-import { View, Text, ImageBackground, Pressable, StyleSheet } from "react-native";
+import { View, Text, ImageBackground, FlatList } from "react-native";
 import BackgroundImage from "../../assets/background.png";
 import userContext from "../../context/userContext";
 import { db } from "../../firebase";
-import { set, ref, child } from "firebase/database";
-import AddPlaceToProfile from "./AddPlaceToProfile";
 
-export default function Settings({ navigation }) {
-    
+export default function Messages({ navigation }) {
+
     const { state } = useContext(userContext)
+    const [adds, setAdds] = useState([])
+    // VIESTIT OVAT SELLAISIA ILMOITUKSIA, JOISSA ON VIESTEJÄ JA OLEN ILMOITUKSEN JÄTTÄJÄ TAI MUKANA MESSAGES LISTASSA
 
-    
+    useEffect(() => {
+        onValue(
+            ref(db, 'adverts'), (snapshot) => {
+                const data = snapshot.val()
+                const allAdds = Object.entries(data)
+                setAdds(allAdds.filter(add => add[1]?.messages).filter(add => add[1].userId === state.user.uid || Object.values(add[1].messages).includes(state.user.uid)  ))
+            }
+        )
+    }, [])
 
     return (
         <View style={{
@@ -41,45 +50,19 @@ export default function Settings({ navigation }) {
                             fontSize: 40,
                         }}
                     >
-                        ASETUKSET
+                        VIESTIT
                     </Text>
-                    <Icon name="settings" color="white" size={50} />
+                    <Icon name="message" color="white" size={50} />
                 </View>
                 <View style={{
-
+                    flex: 1
                 }}>
-                    <Text style={{ fontFamily: 'Dosis', textAlign: "center", fontSize: 25, color: "white" }}>Omat toimipaikkani</Text>
-                    <AddPlaceToProfile />
+                    <FlatList 
+
+                    />
                 </View>                
                 
             </ImageBackground>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    pressable: {
-        // marginTop: 'auto',
-        marginLeft: 'auto',
-        marginBottom: 10,
-        marginRight: 'auto',
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 0.5,
-        padding: 10,
-        borderRadius: 10,
-    },
-    notEditable: {
-        flex: 2,
-        margin: 10,
-        backgroundColor: "white",
-        opacity: 0.8,
-        borderRadius: 10
-    },
-    editable: {
-        flex: 2,
-        margin: 10,
-        backgroundColor: "white",
-        borderRadius: 10
-    }
-})

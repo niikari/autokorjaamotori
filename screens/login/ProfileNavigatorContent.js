@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { View, Text, ImageBackground, Pressable, StyleSheet } from "react-native";
 import userContext from "../../context/userContext";
 import AvatarImage from "../../assets/avatar.png"
-import { Button } from "@rneui/themed";
+import { Avatar, Button } from "@rneui/themed";
 import { Icon } from "@rneui/base";
 import { app } from "../../firebase";
 import { getAuth, signOut } from "firebase/auth";
@@ -32,19 +32,13 @@ export default function ProfileNavigatorContent(props) {
                         borderRadius: 1000,
                         margin: 15
                     }}>
-                        <ImageBackground 
-                            source={AvatarImage}
-                            resizeMode="cover"
-                            style={{
-                                flex: 1,
-                                width: 50,
-                                height: 50
-                            }}
+                        <Avatar 
+                            source={state.user.photoUrl ? { uri: state.user.photoUrl } : AvatarImage}
+                            rounded
                         />
-
                     </View>
                     <View>
-                        <Text style={{ fontFamily: 'Dosis', fontSize: 20 }}>{state.user.username}</Text>
+                        <Text style={{ fontFamily: 'Dosis', fontSize: 20 }}>{state.user.email}</Text>
                     </View>
                 </View>
                 <View style={{
@@ -52,7 +46,7 @@ export default function ProfileNavigatorContent(props) {
                     flexDirection: "row"
                 }}>
                     <Text style={{ fontFamily: 'Dosis', fontSize: 15, marginRight: 30 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>20</Text> Ilmoitusta</Text>
-                    <Text style={{ fontFamily: 'Dosis', fontSize: 15 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>1</Text> Yritys</Text>
+                    <Text style={{ fontFamily: 'Dosis', fontSize: 15 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>{state.user.places ? state.user.places.length : 0}</Text> {state.user.places ? (state.user.places.length === 0 || state.user.places.length > 0 ? "Yritystä" : "Yritys") : "Yritystä" }</Text>
                 </View>
 
                 <View style={{
@@ -72,7 +66,7 @@ export default function ProfileNavigatorContent(props) {
                             <Icon name="assignment" size={30} />
                             <Text style={styles.contentTitle}>Ilmoitukseni</Text>
                         </Pressable>
-                        <Pressable style={styles.content}>
+                        <Pressable style={styles.content} onPress={() => props.navigation.navigate("messagesnavigator")} >
                             <Icon name="question-answer" size={30} />
                             <Text style={styles.contentTitle}>Viestit</Text>
                         </Pressable>
