@@ -1,4 +1,5 @@
-import { Icon } from "@rneui/themed";
+import { ListItem } from "@rneui/base";
+import { Avatar, Icon } from "@rneui/themed";
 import { onValue, ref } from "firebase/database";
 import { useContext } from "react";
 import { useEffect } from "react";
@@ -7,22 +8,53 @@ import { View, Text, ImageBackground, FlatList } from "react-native";
 import BackgroundImage from "../../assets/background.png";
 import userContext from "../../context/userContext";
 import { db } from "../../firebase";
+import AvatarImage from "../../assets/no_photo.png"
 
 export default function Messages({ navigation }) {
 
     const { state } = useContext(userContext)
-    const [adds, setAdds] = useState([])
-    // VIESTIT OVAT SELLAISIA ILMOITUKSIA, JOISSA ON VIESTEJÄ JA OLEN ILMOITUKSEN JÄTTÄJÄ TAI MUKANA MESSAGES LISTASSA
+    const [questions, setQuestions] = useState([]) // KYSYMYKSIÄ, JOISSA KÄYTTÄJÄ JOKO KYSYJÄNÄ TAI ILMOITUKESSA ILMOITTAJA JOHON KYSYMYS LIITTYY
 
     useEffect(() => {
         onValue(
-            ref(db, 'adverts'), (snapshot) => {
-                const data = snapshot.val()
-                const allAdds = Object.entries(data)
-                setAdds(allAdds.filter(add => add[1]?.messages).filter(add => add[1].userId === state.user.uid || Object.values(add[1].messages).includes(state.user.uid)  ))
+            ref(db, 'questions'), (snapshot) => {
+                const data = Object.entries(snapshot.val())
+                setQuestions(data.filter(ques => ques[1].userId === state.user.uid || ques[1].add.userId === state.user.uid ))
             }
         )
     }, [])
+
+    const RenderItem = item => {
+        const id = item[0]
+        const ques = item[1]
+        return (
+            <ListItem>
+                <Avatar 
+                    rounded
+                    source={ques.add.photos ? {uri: ques.add.photos[0]} : AvatarImage}
+                    size={50}
+                />
+                <ListItem.Content>
+                    <ListItem.Title>{ques.add.header}</ListItem.Title>
+                    <ListItem.Subtitle>Viimeisin:</ListItem.Subtitle>
+                    <ListItem.Subtitle>   
+                        {
+                            ques.answers ? ques.answers[ques.answers.length - 1].message : ques.message
+                        }
+                    </ListItem.Subtitle>
+                </ListItem.Content>
+                <ListItem.Chevron size={40} onPress={() => navigation.navigate("messagechat", {questionId: id})} />
+            </ListItem>
+        )
+    }
+
+    const ListItemSeperator= () => {
+        return (
+            <View style={{
+                height: 5
+            }}/>
+        )
+    }
 
     return (
         <View style={{
@@ -58,7 +90,10 @@ export default function Messages({ navigation }) {
                     flex: 1
                 }}>
                     <FlatList 
-
+                        data={questions}
+                        keyExtractor={(item, index) => index}
+                        renderItem={({item}) => RenderItem(item)}
+                        ItemSeparatorComponent={ListItemSeperator}
                     />
                 </View>                
                 

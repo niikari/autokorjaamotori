@@ -147,7 +147,7 @@ export default function Advert({ route, navigation }) {
             }}>
                 {
                     state.user ? (state.user.uid !== info.userId ? (
-                        <SendMessageButton addId={addId} info={info} userId={state.user.uid} />
+                        <SendMessageButton addId={addId} info={info} userId={state.user.uid} email={state.user.email} />
                         ) 
                         :
                         <Text></Text>

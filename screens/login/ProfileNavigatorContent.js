@@ -1,18 +1,31 @@
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { useContext } from "react";
-import { View, Text, ImageBackground, Pressable, StyleSheet } from "react-native";
+import { useContext, useState, useEffect } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import userContext from "../../context/userContext";
 import AvatarImage from "../../assets/avatar.png"
 import { Avatar, Button } from "@rneui/themed";
 import { Icon } from "@rneui/base";
 import { app } from "../../firebase";
 import { getAuth, signOut } from "firebase/auth";
+import { db } from "../../firebase";
+import { onValue, ref } from "firebase/database";
 
 const auth = getAuth(app)
 
 export default function ProfileNavigatorContent(props) {
 
     const { state, logout } = useContext(userContext)
+
+    const [questions, setQuestions] = useState([])
+
+    useEffect(() => {
+        onValue(
+            ref(db, 'questions'), (snapshot) => {
+                const data = Object.entries(snapshot.val())
+                setQuestions(data.filter(ques => ques[1].userId === state.user.uid || ques[1].add.userId === state.user.uid ))
+            }
+        )
+    }, [])
 
     const handleLogout = () => {
         signOut(auth)

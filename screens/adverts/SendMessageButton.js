@@ -1,43 +1,37 @@
 import { Button, Dialog, Icon } from "@rneui/themed";
 import { db } from "../../firebase";
-import { set, ref, onValue } from "firebase/database";
+import { ref, push } from "firebase/database";
 import { useState } from "react";
 import { View, Text, TextInput, Alert } from "react-native";
-import { useEffect } from "react";
 
-export default function SendMessageButton({ addId, info, userId }) {
+export default function SendMessageButton({ addId, userId, info }) {
 
     const [visible, setVisible] = useState(false)
-    const [message, setMessage] = useState('')
-    const [messages, setMessages] = useState([])
+    const [message, setMessage] = useState({
+        seen: false,
+        date: '',
+        message: '',
+        userId: userId,
+        addId: addId,
+        add: info
+    })
 
-    useEffect(() => {
-        onValue(
-            ref(db, `adverts/${addId}`), (snapshot) => {
-                const data = snapshot.val()
-                data.messages && setMessages(data.messages)
-            }
+    const sendMessage = () => {
+        push(
+            ref(db, `questions`), message
         )
-    }, [])
+        .then(() => initialize())
+        .catch(err => Alert.alert("Hups!", "Jokin meni pieleen..."))
+    }
 
-    const sendMessage = async () => {
-        set(
-            ref(db, `adverts/${addId}`), {
-                ...info,
-                messages: [...messages, {
-                    message: message,
-                    date: new Date().getTime(),
-                    sender: userId,
-                    seen: false
-                }]
-            }
-        )
-        .then(() => {
-            setMessage('')
-            setVisible(!visible)
-            Alert.alert("Viesti lähetetty ilmoittajalle")
+    const initialize = () => {
+        setMessage({
+            seen: false,
+            date: '',
+            message: ''
         })
-        .catch(err => console.error(err))
+        setVisible(!visible)
+        Alert.alert("Viestisi lähetetty ilmoittajalle")
     }
 
     return (
@@ -64,8 +58,8 @@ export default function SendMessageButton({ addId, info, userId }) {
                         marginTop: 20
                     }}
                     textAlignVertical="top"
-                    value={message}
-                    onChangeText={txt => setMessage(txt)}            
+                    value={message.message}
+                    onChangeText={txt => setMessage({...message, message: txt, date: new Date().getTime()})}            
                 />
                 <Dialog.Actions>
                     <Button title="Lähetä" type="clear" onPress={sendMessage} />
