@@ -6,14 +6,40 @@ import { FlatList } from "react-native-gesture-handler";
 import BackgroundImage from "../../assets/background.png";
 import userContext from "../../context/userContext";
 import { db } from "../../firebase";
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, update } from "firebase/database";
 import { Icon, ListItem, Avatar, Button, Dialog, Input, Switch  } from "@rneui/themed";
 import NoPhoto from "../../assets/no_photo.png";
-import { distance } from "../../calculateDistance";
 import * as Location from'expo-location';
-import { add } from "react-native-reanimated";
 
 const screen = Dimensions.get("screen")
+
+const debs = ([
+    {
+        name: "Myydään",
+        selected: false,
+        disabled: false
+    },
+    {
+        name: "Ostetaan",
+        selected: false,
+        disabled: false
+    },
+    {
+        name: "Vaihdetaan",
+        selected: false,
+        disabled: false
+    },
+    {
+        name: "Vuokrataan",
+        selected: false,
+        disabled: false
+    },
+    {
+        name: "Annetaan",
+        selected: false,
+        disabled: false
+    }
+])
 
 export default function AllAdverts({ navigation }) {
 
@@ -28,6 +54,34 @@ export default function AllAdverts({ navigation }) {
         byTime: false,
         sentence: ''
     })
+
+    const [debs, setDebs] = useState([
+        {
+            name: "Myydään",
+            selected: false,
+            disabled: false
+        },
+        {
+            name: "Ostetaan",
+            selected: false,
+            disabled: false
+        },
+        {
+            name: "Vaihdetaan",
+            selected: false,
+            disabled: false
+        },
+        {
+            name: "Vuokrataan",
+            selected: false,
+            disabled: false
+        },
+        {
+            name: "Annetaan",
+            selected: false,
+            disabled: false
+        }
+    ])
 
     useEffect(() => {
         (async () => {
@@ -50,8 +104,22 @@ export default function AllAdverts({ navigation }) {
         )
     }, [])
 
-    const calculateDistance = () => {
+    const updateCountOnAdd = (id, info) => {
+        update(
+            ref(db, `adverts/${id}`), {
+                clicked: info?.clicked ? info.clicked + 1 : 1
+            }
+        )
+        .catch(err => Alert.alert("Hups!", "Jokin meni pieleen..."))
+    }
 
+    const isAddOnUsersFavorites = (id) => {
+        if (state.user?.favorites) {
+            if (state.user.favorites.includes(id)) {
+                return true
+            }
+        }
+        return false
     }
 
     const handleChange = (txt) => {
@@ -76,7 +144,7 @@ export default function AllAdverts({ navigation }) {
                     />
                     <ListItem.Content>
                         <ListItem.Title>{info.department}</ListItem.Title>
-                        <ListItem.Title>{info.header}</ListItem.Title>                    
+                        <ListItem.Title>{info.header} {isAddOnUsersFavorites(id) && <Icon name="favorite" color="red" /> } </ListItem.Title>                    
                         <ListItem.Subtitle>Hinta: {info.price}</ListItem.Subtitle>
                         <ListItem.Subtitle>{info.place.city}</ListItem.Subtitle>
                         <ListItem.Subtitle><Button title="Kartalla" onPress={() => navigation.navigate("onmap", {place: info.place})} type="clear" titleStyle={{ fontFamily: 'Dosis', color: "black" }} iconPosition="right" icon={<Icon name="map" />} /></ListItem.Subtitle>
@@ -84,16 +152,19 @@ export default function AllAdverts({ navigation }) {
                     <ListItem.Chevron 
                         size={50}
                         color="black"
-                        onPress={() => navigation.navigate("advert", {
-                            addId: id,
-                            info: info
-                        })}
+                        onPress={() => {
+                            updateCountOnAdd(id, info)
+                            navigation.navigate("advert", {
+                                addId: id,
+                                info: info
+                            })
+                        }}
                     />
                 </ListItem>
             )
         }
     }
-
+//updateCountOnAdd
     const ListSeperator = () => {
         return (
             <View style={{
@@ -162,10 +233,11 @@ export default function AllAdverts({ navigation }) {
                     width: 70,
                     position: 'absolute',
                     bottom: 10,
-                    right: 10,
+                    right: 250,
                     height: 70,
                     backgroundColor: '#fff',
                     borderRadius: 100,
+                    opacity: 0.8
                     }}
                     onPress={() => setVisible(!visible)}
                 >
@@ -193,15 +265,20 @@ export default function AllAdverts({ navigation }) {
                         {search.nearest ? (<Switch value={true} onPress={() => setSearch({...search, nearest: !search.nearest})} />) : (<Switch value={false} onPress={() => setSearch({...search, nearest: !search.nearest})}/>)}
                         
                     </View>
-                    <View style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-around"
-                    }}>
-                        <Text>Myydään</Text>
-                        {search.nearest ? (<Switch value={true} onPress={() => setSearch({...search, nearest: !search.nearest})} />) : (<Switch value={false} onPress={() => setSearch({...search, nearest: !search.nearest})}/>)}
-                        
-                    </View>
+                    <Text style={{ fontFamily: 'Dosis', fontSize: 15, textAlign: "center" }}>Vain tietyltä osastolta?</Text>
+                    {
+                        debs.map((deb, index) => 
+                        <View style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-around"
+                        }}
+                            key={index}
+                        >
+                            <Text>{deb.name}</Text>
+                            <Switch />
+                        </View> )
+                    }
                     
                     <Dialog.Actions>
                         <Dialog.Button 

@@ -53,6 +53,7 @@ export default function Create({ navigation, route }) {
         setPlaces(places.map(place => ({...place, selected: false, disabled: false})))
         setHeader('')
         setDiscription('')
+        setPrice('')
     }
 
     const addPhoto = (photo) => {

@@ -1,10 +1,13 @@
 import { Icon } from "@rneui/base";
 import { Button } from "@rneui/themed";
+import { ref, update } from "firebase/database";
 import { useContext } from "react";
-import { View,Text, ScrollView, FlatList, Dimensions, Image, ImageBackground, Pressable } from "react-native";
+import { View,Text, ScrollView, FlatList, Dimensions, Image, ImageBackground, Pressable, Alert } from "react-native";
 import NoPhoto from "../../assets/no_photo.png";
 import userContext from "../../context/userContext";
 import SendMessageButton from "./SendMessageButton";
+import { db } from "../../firebase";
+import { add } from "react-native-reanimated";
 
 const screen = Dimensions.get("screen")
 
@@ -13,6 +16,24 @@ export default function Advert({ route, navigation }) {
     const { info } = route.params
     const { addId } = route.params
     const { state } = useContext(userContext)
+
+    const addToFavorites = () => {
+        update(
+            ref(db, `users/${state.user.uid}`), {
+                favorites: state.user?.favorites ? [...state.user.favorites, addId] : [addId] 
+            }
+        )
+        .catch(err => Alert.alert("Hups!", "Jokin meni pieleen..."))
+    }
+
+    const isThisUsersFavorite = () => {
+        if (state.user?.favorites) {
+            if (state.user.favorites.includes(addId)) {
+                return true
+            }
+        }
+        return false
+    }
 
     const RenderItem = (item) => {
         if (item === "nophotos") {
@@ -47,8 +68,16 @@ export default function Advert({ route, navigation }) {
                             alignItems: "center"
                         }}>
                             
-                            <Text style={{ fontFamily: 'Dosis', fontSize: 15, textAlign: "left", margin: 10, marginTop: 10, fontWeight: "bold" }}>Suosikkeihin</Text>
-                            <Icon name="favorite" />
+                            <Text style={{ fontFamily: 'Dosis', fontSize: 15, textAlign: "left", margin: 10, marginTop: 10, fontWeight: "bold" }}>{isThisUsersFavorite() ? "Suosikkisi" : "Suosikkeihin"}</Text>
+                            {
+                                isThisUsersFavorite() ? (
+                                    <Icon name="favorite" color="red" />
+                                )
+                                :
+                                (
+                                    <Icon name="favorite" onPress={addToFavorites} />
+                                )
+                            }
                         </Pressable>
                         
                     </View>
