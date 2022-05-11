@@ -17,12 +17,41 @@ export default function ProfileNavigatorContent(props) {
     const { state, logout } = useContext(userContext)
 
     const [questions, setQuestions] = useState([])
+    const [unAnsweredQuestions, setUnAnsweredQuestions] = useState(false)
+    const [userAdds, setUserAdds] = useState([])
+
+    useEffect(() => {
+        onValue(
+            ref(db, 'adverts'), (snapshot) => {
+                const data = snapshot.val()
+                setUserAdds(Object.values(data).filter(add => add.userId === state.user.uid))
+            }
+        )
+    }, [])
 
     useEffect(() => {
         onValue(
             ref(db, 'questions'), (snapshot) => {
-                const data = Object.entries(snapshot.val())
-                setQuestions(data.filter(ques => ques[1].userId === state.user.uid || ques[1].add.userId === state.user.uid ))
+                // const data = Object.entries(snapshot.val()).map(obj => obj[1]).filter(quest => quest?.answers && quest).map(quest => quest.answers).map(answer => answer.filter(obj => obj.seen === false && obj.user !== state.user.uid ))
+                // const data = Object.entries(snapshot.val()).map(obj => ({
+                //     answers: obj[1].answers ? obj[1].answers : [],
+                //     originalQuestion: obj[1].message,
+                //     originalQuestionSeen: obj[1].seen,
+                //     originalQuestionFromUser: obj[1].userId,
+                //     questionId: obj[0],
+                //     add: obj[1].add
+                // }))
+                // // KÄYTTÄJÄ ON MUKANA KYSYMYKSESSÄ JOKO KYSYTTÄVÄN ILMOITUKSEN LUOJANA, KYSYJÄNÄ ALUN PERIN TAI VASTAAJANA KETJUSSA
+                // .filter(ques => ques.add.userId === state.user.uid || ques.originalQuestionFromUser === state.user.uid || (ques.answers.filter(answer => answer.user === state.user.uid).length > 0))
+                // .map(obj => {
+                //     if (obj.originalQuestionSeen === false && originalQuestionFromUser !== state.user.uid) {
+                //         setUnAnsweredQuestions(true)
+                //     }
+                //     if (obj.answers.filter(answer => answer.seen === false && answer.user !== state.user.uid)) {
+                //         setUnAnsweredQuestions(true)
+                //     }
+                // })
+                // console.log(data)
             }
         )
     }, [])
@@ -58,7 +87,7 @@ export default function ProfileNavigatorContent(props) {
                     marginLeft: 30,
                     flexDirection: "row"
                 }}>
-                    <Text style={{ fontFamily: 'Dosis', fontSize: 15, marginRight: 30 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>20</Text> Ilmoitusta</Text>
+                    <Text style={{ fontFamily: 'Dosis', fontSize: 15, marginRight: 30 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>{userAdds.length}</Text> {userAdds.length === 1 ? "Ilmoitus" : "Ilmoitusta"}</Text>
                     <Text style={{ fontFamily: 'Dosis', fontSize: 15 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>{state.user.places ? state.user.places.length : 0}</Text> {state.user.places ? (state.user.places.length === 0 || state.user.places.length > 0 ? "Yritystä" : "Yritys") : "Yritystä" }</Text>
                 </View>
 
@@ -75,12 +104,21 @@ export default function ProfileNavigatorContent(props) {
                             <Icon name="face" size={30} />
                             <Text style={styles.contentTitle}>Profiili</Text>
                         </Pressable>
-                        <Pressable style={styles.content}>
+                        <Pressable style={styles.content} onPress={() => props.navigation.navigate("myadds")}>
                             <Icon name="assignment" size={30} />
                             <Text style={styles.contentTitle}>Ilmoitukseni</Text>
                         </Pressable>
                         <Pressable style={styles.content} onPress={() => props.navigation.navigate("messagesnavigator")} >
-                            <Icon name="question-answer" size={30} />
+                            {
+                                unAnsweredQuestions ? (
+                                    <Icon name="mark-as-unread" size={30} color="red" />
+                                )
+                                :
+                                (
+                                    <Icon name="question-answer" size={30} />
+                                )
+                            }
+                            
                             <Text style={styles.contentTitle}>Viestit</Text>
                         </Pressable>
                         <Pressable style={styles.content} onPress={() => props.navigation.navigate("settingsnavigator")}>
