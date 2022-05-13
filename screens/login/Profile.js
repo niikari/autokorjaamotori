@@ -50,12 +50,12 @@ export default function Profile({ navigation }) {
         )
     }
 
-    const countClicksOnMyAdds = () => {
-        if (myAdds.filter(add => add?.clicked && add.clicked).length === 0) {
-            return 0
-        }
-        return myAdds.filter(add => add?.clicked && add.clicked).map(add => add.clicked).reduce((x, y) => x + y)
-    }
+    // const countClicksOnMyAdds = () => {
+    //     if (myAdds.filter(add => add?.clicked && add.clicked).length === 0) {
+    //         return 0
+    //     }
+    //     return myAdds.filter(add => add?.clicked && add.clicked).map(add => add.clicked).reduce((x, y) => x + y)
+    // }
 
     return (
         <View style={{
@@ -97,7 +97,7 @@ export default function Profile({ navigation }) {
                         flex: 1
                     }}
                 >
-                    <View style={{
+                    {/* <View style={{
                         flex: 1,
                         marginTop: 20
                     }}>
@@ -115,9 +115,9 @@ export default function Profile({ navigation }) {
                             :
                             <Text style={{ fontFamily: 'Dosis', fontSize: 15 }} >Ei vielä suosikkeja merkitty</Text>
                         }
-                    </View>
+                    </View> */}
 
-                    <View style={{
+                    {/* <View style={{
                         flex: 1,
                     }}>
                         <Text style={{ fontFamily: 'Dosis', fontSize: 20 }}>Suosituimmat ilmoitukseni</Text>
@@ -128,7 +128,7 @@ export default function Profile({ navigation }) {
                     }}>
                         <Text style={{ fontFamily: 'Dosis', fontSize: 20 }}>Ilmoituksiani katsottu yhteensä</Text>
                         <Text style={{ fontFamily: 'Dosis', fontSize: 15 }}><Text style={{ fontFamily: 'Dosis', fontSize: 15, fontWeight: 'bold' }}>{countClicksOnMyAdds()}</Text> kertaa</Text>
-                    </View>
+                    </View> */}
                         
                 </View>
                 
