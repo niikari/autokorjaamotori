@@ -2,15 +2,15 @@
 
 ## Ota käyttöön
 
-  $ git clone https://github.com/niikari/autokorjaamotori.git
+    $ git clone https://github.com/niikari/autokorjaamotori.git
   
-  $ npm install 
-  tai...
-  $ expo install
+    $ npm install 
+    tai...
+    $ expo install
   
 Avaa Expo sovelluksessa
 
-  $ expo start
+    $ expo start
   
 .env tiedosto saatavilla tarvittaessa pyynnöstä sähköpostiosoitteesta pakniiles@gmail.com
 
